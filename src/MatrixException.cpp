@@ -10,7 +10,7 @@ class MatrixException : public std::exception {
             m_errorCode = errorCode;
         }
 
-        const char* getExceptionMessage() {
+        std::string getExceptionMessage() {
             return error_getErrorMessage(m_errorCode);
         }
 };
