@@ -1,6 +1,8 @@
 #include "Matrix.h"
 #include "ErrorCode.h"
-class Matrix{
+class Matrix {
+    PMatrix m_matrix;
+
     public:
         Matrix(PMatrix* m, uint32_t height, uint32_t width) {
 
