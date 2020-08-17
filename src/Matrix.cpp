@@ -51,7 +51,7 @@ class Matrix {
 
 
         }
-        int getHeight() {
+        uint32_t getHeight() {
             uint32_t height;
             matrix_getHeight(m_matrix, &height);
             return height;
@@ -59,7 +59,7 @@ class Matrix {
 
 
         }
-        int getWidth() {
+        uint32_t getWidth() {
             uint32_t width;
             matrix_getWidth(m_matrix, &width);
             return width;
@@ -68,7 +68,7 @@ class Matrix {
 
 
         }
-        void setValue(int rowIndex, int colIndex, double value) {
+        void setValue(uint32_t rowIndex, uint32_t colIndex, double value) {
             matrix_setValue(m_matrix,rowIndex,colIndex,value);
 
 
@@ -93,7 +93,7 @@ class Matrix {
 
 
         }
-        const void multMatrixWithScalar(PMatrix m,int scalar) {
+        const void multMatrixWithScalar(PMatrix m,double scalar) {
             matrix_multiplyWithScalar(m,scalar);
             
 
