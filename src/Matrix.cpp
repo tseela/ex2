@@ -42,7 +42,7 @@ class Matrix {
 
         }
 
-        Matrix copy(PMatrix* result, CPMatrix source) {
+        Matrix copy(CPMatrix copy) {
 
 
 
@@ -51,7 +51,7 @@ class Matrix {
 
 
         }
-        int getHeight(CPMatrix m) {
+        int getHeight() {
             uint32_t height;
             matrix_getHeight(m_matrix, &height);
             return height;
@@ -59,7 +59,7 @@ class Matrix {
 
 
         }
-        int getWidth(CPMatrix m) {
+        int getWidth() {
             uint32_t width;
             matrix_getWidth(m_matrix, &width);
             return width;
@@ -93,7 +93,7 @@ class Matrix {
 
 
         }
-        void multMatrixWithScalar(PMatrix m, int scalar) {
+        void multMatrixWithScalar(int scalar) {
             matrix_multiplyWithScalar(m,scalar);
             
 
