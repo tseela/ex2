@@ -77,7 +77,7 @@ class Matrix {
 
 
         }
-        Matrix add(CPMatrix lhs, CPMatrix rhs) {
+        const Matrix add(CPMatrix lhs, CPMatrix rhs) {
             PMatrix m;
             matrix_add(&m,lhs,rhs);
             return *m;
@@ -85,7 +85,7 @@ class Matrix {
 
 
         }
-        Matrix multMatrix(CPMatrix lhs, CPMatrix rhs) {
+        const Matrix multMatrix(CPMatrix lhs, CPMatrix rhs) {
             PMatrix m;
             matrix_multiplyMatrices(&m,lhs,rhs);
             return *m;
@@ -93,7 +93,7 @@ class Matrix {
 
 
         }
-        void multMatrixWithScalar(int scalar) {
+        const void multMatrixWithScalar(PMatrix m,int scalar) {
             matrix_multiplyWithScalar(m,scalar);
             
 
