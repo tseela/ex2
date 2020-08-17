@@ -40,10 +40,7 @@ class Matrix {
         }
 
         Matrix& operator=(Matrix&& m) noexcept {
-
-
-
-
+            return *this;
         }
         ~Matrix() {
             matrix_destroy(m_matrix);
