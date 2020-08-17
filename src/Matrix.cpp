@@ -11,7 +11,7 @@ class MatrixException : public std::exception {
             m_errorCode = errorCode;
         }
 
-        std::string getExceptionMessage() {
+        std::string what() {
             return error_getErrorMessage(m_errorCode);
         }
 };
@@ -21,15 +21,18 @@ class Matrix {
     PMatrix m_matrix;
 
     public:
-        Matrix(uint32_t height, uint32_t width) {
-            matrix_create(&m_matrix, height, width);
+        Matrix(uint32_t height, uint32_t width) throw (MatrixException) {
+            if (matrix_create(&m_matrix, height, width))
+                throw new MatrixException(matrix_create(&m_matrix, height, width));
         }
-        Matrix(const Matrix& m) {
-            m_matrix = m.m_matrix;
+        Matrix(const Matrix& m) throw (MatrixException) {
+            if (matrix_copy(&m_matrix, m.m_matrix))
+                throw new MatrixException(matrix_copy(&m_matrix, m.m_matrix));
         }
         
-        Matrix& operator=(const Matrix& other) {
-            m_matrix = other.m_matrix;
+        Matrix& operator=(const Matrix& other) throw (MatrixException) {
+            if (matrix_copy(&m_matrix, other.m_matrix))
+                throw new MatrixException(matrix_copy(&m_matrix, other.m_matrix));
             return *this;
         }
         Matrix(Matrix&& m) noexcept {
@@ -46,30 +49,38 @@ class Matrix {
             matrix_destroy(m_matrix);
         }
 
-        uint32_t getHeight() {
+        uint32_t getHeight() throw (MatrixException) {
             uint32_t height;
-            matrix_getHeight(m_matrix, &height);
+            if (matrix_getHeight(m_matrix, &height))
+                throw new MatrixException(matrix_getHeight(m_matrix, &height));
             return height;
         }
-        uint32_t getWidth() {
+        uint32_t getWidth() throw (MatrixException) {
             uint32_t width;
-            matrix_getWidth(m_matrix, &width);
+            if (matrix_getWidth(m_matrix, &width))
+                throw new MatrixException(matrix_getWidth(m_matrix, &width));
             return width;
         }
-        void setValue(uint32_t rowIndex, uint32_t colIndex, double value) {
-            matrix_setValue(m_matrix,rowIndex,colIndex,value);
+        void setValue(uint32_t rowIndex, uint32_t colIndex, double value) throw (MatrixException) {
+            if (matrix_setValue(m_matrix, rowIndex, colIndex, value))
+                throw new MatrixException(matrix_setValue(m_matrix, rowIndex, colIndex, value));
         }
-        const Matrix add(CPMatrix lhs, CPMatrix rhs) {
+        const Matrix add(CPMatrix lhs, CPMatrix rhs) throw (MatrixException) {
             PMatrix m;
-            matrix_add(&m,lhs,rhs);
+            ErrorCode ec = matrix_add(&m, lhs, rhs);
+            if (ec)
+                throw new MatrixException(ec);
             return *m;
         }
-        const Matrix multMatrix(CPMatrix lhs, CPMatrix rhs) {
+        const Matrix multMatrix(CPMatrix lhs, CPMatrix rhs) throw (MatrixException) {
             PMatrix m;
-            matrix_multiplyMatrices(&m,lhs,rhs);
+            ErrorCode ec = matrix_multiplyMatrices(&m, lhs, rhs);
+            if (ec)
+                throw new MatrixException(ec);
             return *m;
         }
-        const void multMatrixWithScalar(PMatrix m,double scalar) {
-            matrix_multiplyWithScalar(m,scalar);
+        void multMatrixWithScalar(double scalar) throw (MatrixException) {
+            if (matrix_multiplyWithScalar(m_matrix, scalar))
+                throw new MatrixException(matrix_multiplyWithScalar(m_matrix, scalar));
         }
 };
