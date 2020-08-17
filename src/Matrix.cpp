@@ -4,14 +4,14 @@ class Matrix {
     PMatrix m_matrix;
 
     public:
-        Matrix(PMatrix* m, uint32_t height, uint32_t width) {
-
+        Matrix(uint32_t height, uint32_t width) {
+            matrix_create(&m_matrix, height, width);
 
 
 
         }
         Matrix(const Matrix& m) {
-
+            
 
 
 
@@ -37,8 +37,8 @@ class Matrix {
 
         }
         ~Matrix() {
-
-
+            matrix_destroy(m_matrix);
+            
 
         }
 
@@ -52,24 +52,24 @@ class Matrix {
 
         }
         int getHeight(CPMatrix m) {
-
-
-
+            uint32_t height;
+            matrix_getHeight(m_matrix, &height);
+            return height;
 
 
 
         }
         int getWidth(CPMatrix m) {
-
-
-
+            uint32_t width;
+            matrix_getWidth(m_matrix, &width);
+            return width;
 
 
 
 
         }
-        void setValue(PMatrix m, int rowIndex, int colIndex, double value) {
-
+        void setValue(int rowIndex, int colIndex, double value) {
+            matrix_setValue(m_matrix,rowIndex,colIndex,value);
 
 
 
@@ -78,24 +78,24 @@ class Matrix {
 
         }
         Matrix add(CPMatrix lhs, CPMatrix rhs) {
-
-
-
+            PMatrix m;
+            matrix_add(&m,lhs,rhs);
+            return *m;
 
 
 
         }
         Matrix multMatrix(CPMatrix lhs, CPMatrix rhs) {
-
-
-
+            PMatrix m;
+            matrix_multiplyMatrices(&m,lhs,rhs);
+            return *m;
 
 
 
         }
-        Matrix multMatrixWithScalar(CPMatrix m, int scalar) {
-
-
+        void multMatrixWithScalar(PMatrix m, int scalar) {
+            matrix_multiplyWithScalar(m,scalar);
+            
 
 
 
