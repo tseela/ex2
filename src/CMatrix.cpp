@@ -4,34 +4,63 @@
 #include <iostream>
 #include <exception>
 
-
-CMatrix::CMatrix(uint32_t height, uint32_t width) {
+/**
+ * @brief Construct a new CMatrix::CMatrix object
+ * 
+ * @param height the height of the matrix
+ * @param width the width of the matrix
+ */
+CMatrix::CMatrix(uint32_t height, uint32_t width) { 
     if (!error_isSuccess(matrix_create(&m_matrix, height, width)))
        throw new MatrixException(matrix_create(&m_matrix, height, width));
 }
+
 
 CMatrix::CMatrix(const PMatrix& m) {
     if (!error_isSuccess(matrix_copy(&m_matrix, m)))
         throw new MatrixException(matrix_copy(&m_matrix, m));
 }
-
+/**
+ * @brief Construct a new CMatrix::CMatrix object
+ * copy ctor
+ * @param m the other CMatrix to copy
+ */
 CMatrix::CMatrix(const CMatrix& m) {
     if (!error_isSuccess(matrix_copy(&m_matrix, m.m_matrix)))
         throw new MatrixException(matrix_copy(&m_matrix, m.m_matrix));
 }
-        
+/**
+ * @brief copy assignment operator
+ * 
+ * @param other 
+ * @return CMatrix& 
+ */
 CMatrix& CMatrix::operator=(const CMatrix& other) {
     return *this;
 }
-
+/**
+ * @brief Construct a new CMatrix::CMatrix object
+ * move ctor
+ * @param m 
+ */
 CMatrix::CMatrix(CMatrix&& m) noexcept {
     m_matrix = m.m_matrix;
 }
 
+/**
+ * @brief move assignment operator
+ * 
+ * @param m 
+ * @return CMatrix& 
+ */
 CMatrix& CMatrix::operator=(CMatrix&& m) noexcept {
     return *this;
 }
 
+/**
+ * @brief Destroy the CMatrix::CMatrix object
+ * 
+ */
 CMatrix::~CMatrix() {
     matrix_destroy(m_matrix);
 }
@@ -78,9 +107,11 @@ CMatrix add(const CMatrix& lhs, const CMatrix& rhs) {
     // creates the result matrix of adding the given ones
     CMatrix* matrix = new CMatrix::CMatrix(lhs.getHeight(), lhs.getWidth());
     // sets the values of the new matrix (adding lhs & rhs)
-    for (uint32_t i = 0; i < lhs.getHeight(); i++)
-        for (uint32_t j = 0; j < lhs.getWidth(); j++)
+    for (uint32_t i = 0; i < lhs.getHeight(); i++) {
+        for (uint32_t j = 0; j < lhs.getWidth(); j++) {
             matrix->setValue(i, j, lhs.getValue(i, j) + rhs.getValue(i, j));
+        }
+    }
     return *matrix;
 }
 
@@ -91,12 +122,13 @@ CMatrix multMatrix(const CMatrix& lhs, const CMatrix& rhs) {
     // creates the result matrix of multiplying the given ones
     CMatrix* matrix = new CMatrix::CMatrix(lhs.getHeight(), lhs.getWidth());
     // sets the values of the new matrix
-    for (uint32_t i = 0; i < lhs.getHeight(); i++)
+    for (uint32_t i = 0; i < lhs.getHeight(); i++) {
         for (uint32_t j = 0; j < lhs.getWidth(); j++) {
             double value = 0;
             for (uint32_t k = 0; k < rhs.getWidth(); k++)
                 value += lhs.getValue(i, k) * rhs.getValue(k, j);
             matrix->setValue(i, j, value);
         }
+    }
     return *matrix;
 }

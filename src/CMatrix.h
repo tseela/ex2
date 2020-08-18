@@ -8,8 +8,7 @@
 #include "Matrix.h"
 #include <stdint.h>
 
-static CMatrix multMatrix(const CMatrix& lhs, const CMatrix& rhs);
-static CMatrix add(const CMatrix& lhs,const CMatrix& rhs);
+
 
 class CMatrix {
     public:
@@ -25,6 +24,10 @@ class CMatrix {
         void setValue(uint32_t rowIndex, uint32_t colIndex, double value);
         double getValue(uint32_t rowIndex, uint32_t colIndex) const;
         void multMatrixWithScalar(double scalar);
+
+        static CMatrix multMatrix(const CMatrix& lhs, const CMatrix& rhs);
+        static CMatrix add(const CMatrix& lhs,const CMatrix& rhs);
+        
 
     private:
         PMatrix m_matrix;
