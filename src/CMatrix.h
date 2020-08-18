@@ -14,7 +14,6 @@ static CMatrix add(const CMatrix& lhs,const CMatrix& rhs);
 class CMatrix {
     public:
         CMatrix(uint32_t height, uint32_t width);
-        CMatrix::CMatrix(const PMatrix& m);
         CMatrix(const CMatrix& m);
         CMatrix& operator=(const CMatrix& other);
         CMatrix(CMatrix&& m) noexcept;
@@ -28,6 +27,8 @@ class CMatrix {
 
     private:
         PMatrix m_matrix;
+
+        CMatrix::CMatrix(const PMatrix& m);
 };
 
 #endif
