@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include "file_readingException.h"
 
 /**
  * @brief Read the content of a file at path filePath.
@@ -14,20 +15,17 @@ std::string readFileContent(const std::string& filePath) {
 
   // The file is in a bad state. The error can be retrieved
   //	using the global `errno` in linux (#include <cerrno>).
-  if (!in) {
-    // Error here...
-  }
+  if (!in)
+    throw new file_readingException();
 
   // Read the file to a vector. This is not the most effecient
   //	method to read a file.
-  auto content = std::string{std::istreambuf_iterator<char>{in},
-                             std::istreambuf_iterator<char>{}};
+  auto content = std::string{std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
 
   // After reading the file, it should meet EOF (end of file). If
   //  it did not, it means that an error occurred.
-  if (!in.eof()) {
-    // Unlikly to happen error here...
-  }
+  if (!in.eof())
+    throw new file_readingException();
 
   return content;
 }
@@ -45,12 +43,10 @@ void writeFileContent(const std::string& filePath, const std::string& content) {
   std::ofstream out(filePath, std::ios::binary | std::ios::trunc);
 
   // The file is in a bad state.
-  if (!out) {
-    // Error here...
-  }
+  if (!out)
+    throw new file_readingException();
 
   out.write(content.data(), static_cast<std::streamsize>(content.length()));
-  if (!out) {
-    // Unlikly to happen error here...
-  }
+  if (!out)
+    throw new file_readingException();
 }
