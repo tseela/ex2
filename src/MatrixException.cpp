@@ -8,7 +8,7 @@ MatrixException::MatrixException(ErrorCode errorCode) {
     m_errorCode = errorCode;
 }
 
-const char* MatrixException::what() const {
+const char* MatrixException::what() {
     return error_getErrorMessage(m_errorCode);
 }
 

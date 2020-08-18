@@ -1,3 +1,4 @@
+#include "file_readingException.h"
 #include <exception>
 
 class file_readingException : public std::exception {
