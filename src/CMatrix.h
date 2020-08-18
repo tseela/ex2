@@ -23,6 +23,7 @@ class CMatrix {
         uint32_t getHeight() const;
         uint32_t getWidth() const;
         void setValue(uint32_t rowIndex, uint32_t colIndex, double value);
+        double getValue(uint32_t rowIndex, uint32_t colIndex) const;
         void multMatrixWithScalar(double scalar);
 
     private:

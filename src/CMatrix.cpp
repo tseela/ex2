@@ -21,8 +21,6 @@ CMatrix::CMatrix(const CMatrix& m) {
 }
         
 CMatrix& CMatrix::operator=(const CMatrix& other) {
-    if (!error_isSuccess(matrix_copy(&m_matrix, other.m_matrix)))
-        throw new MatrixException(matrix_copy(&m_matrix, other.m_matrix));
     return *this;
 }
 
@@ -58,6 +56,13 @@ void CMatrix::setValue(uint32_t rowIndex, uint32_t colIndex, double value) {
         throw new MatrixException(matrix_setValue(m_matrix, rowIndex, colIndex, value));
 }
 
+double CMatrix::getValue(uint32_t rowIndex, uint32_t colIndex) const {
+    double value;
+    if (!error_isSuccess(matrix_getValue(m_matrix, rowIndex, colIndex, &value)))
+        throw new MatrixException(matrix_getValue(m_matrix, rowIndex, colIndex, &value));
+    return value;
+}
+
 void CMatrix::multMatrixWithScalar(double scalar) {
     if (!error_isSuccess(matrix_multiplyWithScalar(m_matrix, scalar)))
         throw new MatrixException(matrix_multiplyWithScalar(m_matrix, scalar));
@@ -65,24 +70,33 @@ void CMatrix::multMatrixWithScalar(double scalar) {
 
 
 
-/**
- * 
- * We need to change this functions.
- * Maybe copy our impliment and change the arguments type to pointers?
- * 
- */
+
 CMatrix add(const CMatrix& lhs, const CMatrix& rhs) {
-    PMatrix m;
-    ErrorCode ec = matrix_add(&m, lhs.m_matrix, rhs.m_matrix);
-    if (!error_isSuccess(ec))
-        throw new MatrixException(ec);
-    return new CMatrix(m);
+    // if the sizes of the matrices does not match
+    if (lhs.getHeight() != rhs.getHeight() || lhs.getWidth() != rhs.getWidth())
+        throw new MatrixException(ERROR_ADD_SIZES);
+    // creates the result matrix of adding the given ones
+    CMatrix* matrix = new CMatrix::CMatrix(lhs.getHeight(), lhs.getWidth());
+    // sets the values of the new matrix (adding lhs & rhs)
+    for (uint32_t i = 0; i < lhs.getHeight(); i++)
+        for (uint32_t j = 0; j < lhs.getWidth(); j++)
+            matrix->setValue(i, j, lhs.getValue(i, j) + rhs.getValue(i, j));
+    return *matrix;
 }
 
 CMatrix multMatrix(const CMatrix& lhs, const CMatrix& rhs) {
-    PMatrix m;
-    ErrorCode ec = matrix_multiplyMatrices(&m, lhs.m_matrix, rhs.m_matrix);
-    if (!error_isSuccess(ec))
-        throw new MatrixException(ec);
-    return new CMatrix(m);
+    // if the sizes of the matrices does not match
+    if (rhs.getHeight() != lhs.getWidth())
+        throw new MatrixException(ERROR_MULT_SIZES);
+    // creates the result matrix of multiplying the given ones
+    CMatrix* matrix = new CMatrix::CMatrix(lhs.getHeight(), lhs.getWidth());
+    // sets the values of the new matrix
+    for (uint32_t i = 0; i < lhs.getHeight(); i++)
+        for (uint32_t j = 0; j < lhs.getWidth(); j++) {
+            double value = 0;
+            for (uint32_t k = 0; k < rhs.getWidth(); k++)
+                value += lhs.getValue(i, k) * rhs.getValue(k, j);
+            matrix->setValue(i, j, value);
+        }
+    return *matrix;
 }
