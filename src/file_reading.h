@@ -12,7 +12,7 @@ struct Header {
     uint32_t file_size = 0;               // Size of the file (in bytes)
     uint16_t reserved1 = 0;               // Reserved, always 0
     uint16_t reserved2 = 0;               // Reserved, always 0
-    uint32_t offset_data = 0;             // Start position of pixel data (bytes from the beginning of the file)
+    uint32_t offset_pixel_array = 0;             // Start position of pixel data (bytes from the beginning of the file)
 };
 
 struct DIBHeader {
@@ -59,28 +59,16 @@ struct BMP {
                 throw std::runtime_error("Error! Unrecognized file format.");
             }
 
-            // reading color palette
+            // reading the DIB Header
             inp.read((char*)&bmp_dib_header, sizeof(bmp_dib_header));
-            // The ColorPalette is used only for 8-bit files
+
+            // reading color palette
             if(bmp_dib_header.bit_per_pixel == 8) {
                 inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
             }
 
             // Jump to the pixel data location
-            inp.seekg(bmp_header.offset_data, inp.beg);
-
-            // Color palette appears only on 8-bit files
-            if(bmp_dib_header.bit_per_pixel == 8) {
-                bmp_header.offset_data = sizeof(Header) + sizeof(DIBHeader) + sizeof(ColorPalette);
-            } else {
-                bmp_header.offset_data = sizeof(Header) + sizeof(DIBHeader);
-            }
-            bmp_header.file_size = bmp_header.offset_data;
-
-            if (bmp_dib_header.height < 0 || bmp_dib_header.width < 0) {
-                throw std::runtime_error("Image's height or width is smaller then 0 (WTF?!?)");
-            }
-
+            inp.seekg(bmp_header.offset_pixel_array, inp.beg);
             bmp_bitMapArray.resize(bmp_dib_header.width * bmp_dib_header.height * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE);
 
             // Checking the different row paddings
