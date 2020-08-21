@@ -4,7 +4,6 @@
 #define _CMATRIX_H
 
 #include "ErrorCode.h"
-#include "MatrixException.h"
 #include "Matrix.h"
 #include <stdint.h>
 
@@ -28,6 +27,9 @@ class CMatrix {
         static CMatrix multMatrix(const CMatrix& lhs, const CMatrix& rhs);
         static CMatrix add(const CMatrix& lhs,const CMatrix& rhs);
         
+        CMatrix operator+(const CMatrix& rhs) const;
+        CMatrix operator-(const CMatrix& rhs) const;
+        CMatrix operator*(const CMatrix& rhs) const;
 
     private:
         PMatrix m_matrix;
