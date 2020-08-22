@@ -5,6 +5,7 @@
 #include <iostream>
 
 #define SIZE_OF_BYTE 8
+#define BIT_PER_PIXEL_8 8
 
 #pragma pack(push, 1)
 struct Header {
@@ -46,9 +47,7 @@ struct BMP {
     ColorPalette bmp_color_palette;
     std::vector<uint8_t> bmp_bitMapArray;
 
-    BMP(const char *fname) {
-        readFile(fname);
-    }
+    BMP(const char *fname);
 
     void readFile(const char *fname);
     void writeToFile(const char *fname);

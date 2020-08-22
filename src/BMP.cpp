@@ -1,5 +1,8 @@
 #include "BMP.h"
 
+BMP::BMP(const char *fname) {
+    readFile(fname);
+}
 
 void BMP::readFile(const char *fname) {
     std::ifstream inp {fname, std::ios_base::binary};
