@@ -1,8 +1,11 @@
 #pragma once
+#ifndef _BMP_H
+#define _BMP_H
+
 #include <fstream>
 #include <vector>
-#include <stdexcept>
 #include <iostream>
+#include "CMatrix.h"
 
 #define SIZE_OF_BYTE 8
 #define BIT_PER_PIXEL_8 8
@@ -45,15 +48,19 @@ struct BMP {
     Header bmp_header;
     DIBHeader bmp_dib_header;
     ColorPalette bmp_color_palette;
-    std::vector<uint8_t> bmp_bitMapArray;
 
     BMP(const char *fname);
 
     void readFile(const char *fname);
     void writeToFile(const char *fname);
 
+    CMatrix& getBitMapMatrix() const;
+    void setBitMapMatrix(CMatrix& bitMapMatrix);
+
+
 private:
     uint32_t row_stride = 0;
+    std::vector<uint8_t> bmp_bitMapArray;
 
     void writeHeader(std::ofstream &of);
     void writeBitMap(std::ofstream &of);
@@ -61,3 +68,5 @@ private:
     // Add 1 to the row_stride until it is divisible with align_stride (for paddings)
     uint32_t make_stride_aligned(uint32_t align_stride);
 };
+
+#endif
