@@ -57,7 +57,6 @@ struct BMP {
     CMatrix& getBitMapMatrix() const;
     void setBitMapMatrix(CMatrix& bitMapMatrix);
 
-
 private:
     uint32_t row_stride = 0;
     std::vector<uint8_t> bmp_bitMapArray;
