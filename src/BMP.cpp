@@ -29,7 +29,7 @@ void BMP::readFile(const char *fname) {
         }
 
         // Jump to the pixel data location
-        inp.seekg(bmp_header.offset_pixel_array, inp.beg);
+        // inp.seekg(bmp_header.offset_pixel_array, inp.beg);
         bmp_bitMapArray.resize(bmp_dib_header.width * bmp_dib_header.height * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE);
 
         // Checking the different row paddings
