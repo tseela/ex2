@@ -49,10 +49,10 @@ struct BMP {
     DIBHeader bmp_dib_header;
     ColorPalette bmp_color_palette;
 
-    BMP(const char *fname);
+    BMP(const std::string& fname);
 
-    void readFile(const char *fname);
-    void writeToFile(const char *fname);
+    void readFile(const std::string& fname);
+    void writeToFile(const std::string& fname);
 
     CMatrix& getBitMapMatrix() const;
     void setBitMapMatrix(CMatrix& bitMapMatrix);

@@ -7,11 +7,11 @@
 #include "CMatrix.h"
 #include "BMP.h"
 
-BMP::BMP(const char *fname) {
+BMP::BMP(const std::string& fname) {
     readFile(fname);
 }
 
-void BMP::readFile(const char *fname) {
+void BMP::readFile(const std::string& fname) {
     std::ifstream inp {fname, std::ios_base::binary};
     if (inp) {
         // reading the bmp_header
@@ -55,7 +55,7 @@ void BMP::readFile(const char *fname) {
     }
 }
 
-void BMP::writeToFile(const char *fname) {
+void BMP::writeToFile(const std::string& fname) {
     std::ofstream of {fname, std::ios_base::binary};
     if (of) {
         // Check for paddings
