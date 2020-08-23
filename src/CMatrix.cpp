@@ -128,3 +128,7 @@ CMatrix CMatrix::operator-(const CMatrix& rhs) const {
 CMatrix CMatrix::operator*(const CMatrix& rhs) const {
     return multMatrix(*this, rhs);
 }
+
+double CMatrix::operator()(uint32_t rowIndex, uint32_t colIndex) const {
+    return getValue(rowIndex, colIndex);
+}

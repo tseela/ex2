@@ -30,6 +30,7 @@ class CMatrix {
         CMatrix operator+(const CMatrix& rhs) const;
         CMatrix operator-(const CMatrix& rhs) const;
         CMatrix operator*(const CMatrix& rhs) const;
+        double operator()(uint32_t rowIndex, uint32_t colIndex) const;
 
     private:
         PMatrix m_matrix;
