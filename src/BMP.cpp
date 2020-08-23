@@ -116,7 +116,7 @@ void BMP::setBitMapMatrix(CMatrix& bitMapMatrix) {
     bmp_bitMapArray.resize(bmp_dib_header.width * bmp_dib_header.height * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE);
     for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
         for (uint32_t j = 0; j < bmp_dib_header.width; ++j) {
-            bmp_bitMapArray[i * bmp_dib_header.width + j] = bitMapMatrix.getValue(i, j);
+            bmp_bitMapArray[i * bmp_dib_header.width + j] = (int) bitMapMatrix.getValue(i, j);
         }
     }
 }
