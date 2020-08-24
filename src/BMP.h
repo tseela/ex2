@@ -2,9 +2,11 @@
 #ifndef _BMP_H
 #define _BMP_H
 
+#include <stdio.h>
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <memory>
 #include "CMatrix.h"
 
 #define SIZE_OF_BYTE 8
@@ -54,8 +56,8 @@ struct BMP {
     void readFile(const std::string& fname);
     void writeToFile(const std::string& fname);
 
-    CMatrix& getBitMapMatrix() const;
-    void setBitMapMatrix(CMatrix& bitMapMatrix);
+    std::unique_ptr<CMatrix> getBitMapMatrix() const;
+    void setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix);
 
 private:
     uint32_t row_stride = 0;
