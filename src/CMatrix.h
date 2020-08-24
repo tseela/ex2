@@ -32,7 +32,7 @@ class CMatrix {
     private:
         PMatrix m_matrix;
 
-        CMatrix::CMatrix(const PMatrix& m);
+        CMatrix(const PMatrix& m);
 };
 
 #endif
