@@ -45,13 +45,24 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
 
 
 void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std::string& outputPath) {
-    auto image = BMP(imagePath);
-    uint32_t blue = image.bmp_color_palette.blue_mas;
-    uint32_t red = image.bmp_color_palette.red_mask;
-    uint32_t green = image.bmp_color_palette.green_mask;
-    uint32_t grayScale = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-    image.bmp_color_palette.red_mask = grayScale;
-    image.bmp_color_palette.green_mask = grayScale;
-    image.bmp_color_palette.blue_mas = grayScale;
-    image.writeToFile(outputPath);
+    auto image = std::make_unique<BMP>(imagePath);
+    auto matrix = image->BMP::getBitMapMatrix();
+    std::unique_ptr<CMatrix> new_bitMap;
+    if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
+        
+    } else {
+        for ( uint32_t i = 0; i < matrix->getHeight(); ++i ) {
+            for ( uint32_t j = 0; j < matrix->getWidth(); j+=3 ) {
+                uint32_t red = matrix->getValue(i,j);
+                uint32_t green = matrix->getValue(i,j+1);
+                uint32_t blue = matrix->getValue(i,j+2);
+                double grayScale = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                new_bitMap->setValue(i,j,grayScale);
+                new_bitMap->setValue(i,j+1,grayScale);
+                new_bitMap->setValue(i,j+2,grayScale);
+            }
+        }
+    }
+    image->setBitMapMatrix(matrix);
+    image->writeToFile(outputPath);
 }
