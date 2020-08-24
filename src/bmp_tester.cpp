@@ -51,6 +51,7 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
         
     } else {
+        new_bitMap = std::make_unique<CMatrix>(matrix->getHeight(), matrix->getWidth());
         for ( uint32_t i = 0; i < matrix->getHeight(); ++i ) {
             for ( uint32_t j = 0; j < matrix->getWidth(); j+=3 ) {
                 uint32_t red = matrix->getValue(i,j);
@@ -63,6 +64,6 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
             }
         }
     }
-    image->setBitMapMatrix(matrix);
+    image->setBitMapMatrix(new_bitMap);
     image->writeToFile(outputPath);
 }
