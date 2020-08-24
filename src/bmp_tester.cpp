@@ -45,5 +45,13 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
 
 
 void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std::string& outputPath) {
-    
+    auto image = BMP(imagePath);
+    uint32_t blue = image.bmp_color_palette.blue_mas;
+    uint32_t red = image.bmp_color_palette.red_mask;
+    uint32_t green = image.bmp_color_palette.green_mask;
+    uint32_t grayScale = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    image.bmp_color_palette.red_mask = grayScale;
+    image.bmp_color_palette.green_mask = grayScale;
+    image.bmp_color_palette.blue_mas = grayScale;
+    image.writeToFile(outputPath);
 }

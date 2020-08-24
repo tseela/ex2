@@ -2,11 +2,9 @@
 #ifndef _BMP_H
 #define _BMP_H
 
-#include <stdio.h>
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include <memory>
 #include "CMatrix.h"
 
 #define SIZE_OF_BYTE 8
