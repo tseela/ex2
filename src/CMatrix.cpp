@@ -16,18 +16,18 @@ CMatrix::CMatrix(uint32_t height, uint32_t width) {
 }
 
 
-CMatrix::CMatrix(const PMatrix& m) {
-    if (!error_isSuccess(matrix_copy(&m_matrix, m)))
-        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, m)));
+CMatrix::CMatrix(const PMatrix& other) {
+    if (!error_isSuccess(matrix_copy(&m_matrix, other)))
+        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, other)));
 }
 /**
  * @brief Construct a new CMatrix::CMatrix object
  * copy ctor
- * @param m the other CMatrix to copy
+ * @param other the other CMatrix to copy
  */
-CMatrix::CMatrix(const CMatrix& m) {
-    if (!error_isSuccess(matrix_copy(&m_matrix, m.m_matrix)))
-        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, m.m_matrix)));
+CMatrix::CMatrix(const CMatrix& other) {
+    if (!error_isSuccess(matrix_copy(&m_matrix, other.m_matrix)))
+        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, other.m_matrix)));
 }
 /**
  * @brief copy assignment operator
@@ -35,27 +35,24 @@ CMatrix::CMatrix(const CMatrix& m) {
  * @param other 
  * @return CMatrix& 
  */
-CMatrix& CMatrix::operator=(const CMatrix& other) {
-    return *this;
-}
+CMatrix& CMatrix::operator=(const CMatrix& other) = default;
+
 /**
  * @brief Construct a new CMatrix::CMatrix object
  * move ctor
- * @param m 
+ * @param other
  */
-CMatrix::CMatrix(CMatrix&& m) noexcept {
-    m_matrix = m.m_matrix;
+CMatrix::CMatrix(CMatrix&& other) noexcept {
+    m_matrix = other.m_matrix;
 }
 
 /**
  * @brief move assignment operator
  * 
- * @param m 
+ * @param other
  * @return CMatrix& 
  */
-CMatrix& CMatrix::operator=(CMatrix&& m) noexcept {
-    return *this;
-}
+CMatrix& CMatrix::operator=(CMatrix&& other) noexcept = default;
 
 /**
  * @brief Destroy the CMatrix::CMatrix object
