@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <memory>
-#include <stdint.h>
 #include "CMatrix.h"
 #include "BMP.h"
 
@@ -26,7 +25,13 @@ void BMP::readFile(const std::string& fname) {
 
         // reading color palette
         if(bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-            inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
+            if (bmp_dib_header.colors_used > 0) {
+                inp.read((char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
+            } else if (bmp_dib_header.colors_used == 0) {
+                inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
+            } else {
+                throw std::runtime_error("Unable to find the color palette of the image.");
+            }
         }
 
         // Jump to the pixel data location
@@ -85,8 +90,12 @@ void BMP::writeToFile(const std::string& fname) {
 void BMP::writeHeader(std::ofstream &of) {
     of.write((const char*)&bmp_header, sizeof(bmp_header));
     of.write((const char*)&bmp_dib_header, sizeof(bmp_dib_header));
-    if(bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        of.write((const char*)&bmp_color_palette, sizeof(bmp_color_palette));
+    if (bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
+        if (bmp_dib_header.colors_used > 0) {
+            of.write((const char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
+        } else {
+            of.write((const char*)&bmp_color_palette, sizeof(bmp_color_palette));
+        }
     }
 }
 
@@ -104,28 +113,18 @@ uint32_t BMP::make_stride_aligned(uint32_t align_stride) {
 }
 
 std::unique_ptr<CMatrix> BMP::getBitMapMatrix() const {
+    uint32_t matrixWidth = bmp_dib_header.width * 3;
     if (bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, bmp_dib_header.width * 3);
-        uint32_t k = 0;
-        for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
-            for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
-                matrix->setValue(i, j, bmp_bitMapArray.at(k));
-                matrix->setValue(i, j + 1, bmp_bitMapArray.at(k));
-                matrix->setValue(i, j + 2, bmp_bitMapArray.at(k));
-            }
-        }
-        return matrix;
-    } else {
-        uint32_t matrixWidth = bmp_dib_header.width * 3;
-        auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, matrixWidth);
-        uint32_t k = 0;
-        for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
-            for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
-                matrix->setValue(i, j, bmp_bitMapArray.at(k));
-            }
-        }
-        return matrix;
+        matrixWidth = bmp_dib_header.width;
     }
+    auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, matrixWidth);
+    uint32_t k = 0;
+    for (uint32_t i = 0; i < static_cast<uint32_t>(bmp_dib_header.height); ++i) {
+        for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
+            matrix->setValue(i, j, bmp_bitMapArray.at(k));
+        }
+    }
+    return matrix;
 }
 
 void BMP::setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix) {
@@ -133,16 +132,8 @@ void BMP::setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix) {
     uint32_t k = 0;
     for (uint32_t i = 0; i < bitMapMatrix->getHeight(); ++i) {
         for (uint32_t j = 0; j < bitMapMatrix->getWidth(); ++j, ++k) {
-            bmp_bitMapArray.at(k) = static_cast<uint8_t>(bitMapMatrix->getValue(i, j));
+            bmp_bitMapArray[k] = static_cast<uint8_t>(bitMapMatrix->getValue(i, j));
         }
     }
-}
-Color::Color(uint32_t red, uint32_t green, uint32_t blue){
-    this->red = red;
-    this->green = green;
-    this->blue = blue;
-}
-Color Color::toGray(Color& a) {
-    uint32_t grayScale = 0.2126 * a.red + 0.7152 * a.green + 0.0722 * a.blue;
-    return Color(grayScale,grayScale,grayScale);
+    row_stride = bmp_dib_header.width * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE;
 }
