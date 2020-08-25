@@ -25,7 +25,13 @@ void BMP::readFile(const std::string& fname) {
 
         // reading color palette
         if(bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-            inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
+            if (bmp_dib_header.colors_used > 0) {
+                inp.read((char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
+            } else if (bmp_dib_header.colors_used == 0) {
+                inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
+            } else {
+                throw std::runtime_error("Unable to find the color palette of the image.");
+            }
         }
 
         // Jump to the pixel data location
@@ -84,8 +90,12 @@ void BMP::writeToFile(const std::string& fname) {
 void BMP::writeHeader(std::ofstream &of) {
     of.write((const char*)&bmp_header, sizeof(bmp_header));
     of.write((const char*)&bmp_dib_header, sizeof(bmp_dib_header));
-    if(bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        of.write((const char*)&bmp_color_palette, sizeof(bmp_color_palette));
+    if (bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
+        if (bmp_dib_header.colors_used > 0) {
+            of.write((const char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
+        } else {
+            of.write((const char*)&bmp_color_palette, sizeof(bmp_color_palette));
+        }
     }
 }
 
@@ -100,6 +110,16 @@ uint32_t BMP::make_stride_aligned(uint32_t align_stride) {
         new_stride++;
     }
     return new_stride;
+}
+
+void rintMatrix(std::unique_ptr<CMatrix>& lalala) {
+    std::cout << "matrix:" << std::endl;
+    for (uint32_t i = 0; i < lalala->getHeight(); i++) {
+        for (uint32_t j = 0; j < lalala->getWidth(); j++) {
+            std::cout << lalala->getValue(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 std::unique_ptr<CMatrix> BMP::getBitMapMatrix() const {
@@ -122,7 +142,7 @@ void BMP::setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix) {
     uint32_t k = 0;
     for (uint32_t i = 0; i < bitMapMatrix->getHeight(); ++i) {
         for (uint32_t j = 0; j < bitMapMatrix->getWidth(); ++j, ++k) {
-            bmp_bitMapArray.at(k) = static_cast<uint8_t>(bitMapMatrix->getValue(i, j));
+            bmp_bitMapArray[k] = static_cast<uint8_t>(bitMapMatrix->getValue(i, j));
         }
     }
 }

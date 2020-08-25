@@ -2,14 +2,15 @@
 #ifndef _BMP_H
 #define _BMP_H
 
+#include <stdio.h>
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <memory>
 #include "CMatrix.h"
 
 #define SIZE_OF_BYTE 8
 #define BIT_PER_PIXEL_8 8
-#define NUMBER_OF_COLORS_IN_PALETTE 256
 
 #pragma pack(push, 1)
 struct Header {
@@ -34,26 +35,24 @@ struct DIBHeader {
     uint32_t colors_important = 0;          // number of colors used for displaying the bitmap. If 0 all colors are required
 };
 
-// has usage only if bit_per_pixel = 8
-struct ColorPalette {
-    Color palette[256];
-};
-
 struct Color {
-    uint32_t red;
-    uint32_t blue;
-    uint32_t green;
+    uint8_t blue;
+    uint8_t green;
+    uint8_t red;
+    uint8_t padding;
     
-    public:
-        Color(uint32_t red, uint32_t green, uint32_t blue);
-        Color toGray(Color& a);
+    void toGray() {
+        red = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+        blue = red;
+        green = red;
+    }
 };
 #pragma pack(pop)
 
 struct BMP {
     Header bmp_header;
     DIBHeader bmp_dib_header;
-    ColorPalette bmp_color_palette;
+    Color bmp_color_palette[256];
 
     BMP(const std::string& fname);
 

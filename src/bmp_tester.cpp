@@ -37,8 +37,12 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
     auto matrix = image->BMP::getBitMapMatrix();
     std::unique_ptr<CMatrix> new_bitMap;
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        for (auto i=0;i<NUMBER_OF_COLORS_IN_PALETTE;++i) {
-            image->bmp_color_palette.palette[i] = image->bmp_color_palette.palette[i].toGray();
+        uint32_t numOfColorsUsed = 256;
+        if (image->bmp_dib_header.colors_used != 0) {
+            numOfColorsUsed = image->bmp_dib_header.colors_used;
+        }
+        for (uint32_t i = 0; i < numOfColorsUsed; ++i) {
+            image->bmp_color_palette[i].toGray();
         }
     } else {
         new_bitMap = std::make_unique<CMatrix>(matrix->getHeight(), matrix->getWidth());
