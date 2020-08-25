@@ -104,18 +104,28 @@ uint32_t BMP::make_stride_aligned(uint32_t align_stride) {
 }
 
 std::unique_ptr<CMatrix> BMP::getBitMapMatrix() const {
-    uint32_t matrixWidth = bmp_dib_header.width * 3;
     if (bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        matrixWidth = bmp_dib_header.width;
-    }
-    auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, matrixWidth);
-    uint32_t k = 0;
-    for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
-        for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
-            matrix->setValue(i, j, bmp_bitMapArray.at(k));
+        auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, bmp_dib_header.width * 3);
+        uint32_t k = 0;
+        for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
+            for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
+                matrix->setValue(i, j, bmp_bitMapArray.at(k));
+                matrix->setValue(i, j + 1, bmp_bitMapArray.at(k));
+                matrix->setValue(i, j + 2, bmp_bitMapArray.at(k));
+            }
         }
+        return matrix;
+    } else {
+        uint32_t matrixWidth = bmp_dib_header.width * 3;
+        auto matrix = std::make_unique<CMatrix>(bmp_dib_header.height, matrixWidth);
+        uint32_t k = 0;
+        for (uint32_t i = 0; i < bmp_dib_header.height; ++i) {
+            for (uint32_t j = 0; j < matrixWidth; ++j, ++k) {
+                matrix->setValue(i, j, bmp_bitMapArray.at(k));
+            }
+        }
+        return matrix;
     }
-    return matrix;
 }
 
 void BMP::setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix) {
