@@ -11,7 +11,7 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
     std::swap(image->bmp_dib_header.x_pixels_per_meter, image->bmp_dib_header.y_pixels_per_meter);
     std::unique_ptr<CMatrix> new_bitMap;
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        new_bitMap = std::make_unique<CMatrix>(bitMapCopy->getWidth(), bitMapCopy->getHeight());
+        new_bitMap = std::make_unique<CMatrix>(image->bmp_dib_header.height, image->bmp_dib_header.width);
         for(uint32_t i = 0; i < bitMapCopy->getHeight(); ++i) {
             for(uint32_t j = 0; j < bitMapCopy->getWidth(); ++j) {
                 new_bitMap->setValue(j, i, bitMapCopy->getValue(i, bitMapCopy->getWidth() - j - 1));
