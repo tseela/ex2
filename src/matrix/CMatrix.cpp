@@ -4,60 +4,30 @@
 #include <iostream>
 #include <exception>
 
-/**
- * @brief Construct a new CMatrix::CMatrix object
- * 
- * @param height the height of the matrix
- * @param width the width of the matrix
- */
+
 CMatrix::CMatrix(uint32_t height, uint32_t width) { 
     if (!error_isSuccess(matrix_create(&m_matrix, height, width)))
        throw std::runtime_error(error_getErrorMessage(matrix_create(&m_matrix, height, width)));
 }
 
-
-CMatrix::CMatrix(const PMatrix& other) {
-    if (!error_isSuccess(matrix_copy(&m_matrix, other)))
-        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, other)));
+CMatrix::CMatrix(const PMatrix& matrix) {
+    if (!error_isSuccess(matrix_copy(&m_matrix, matrix)))
+        throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, matrix)));
 }
-/**
- * @brief Construct a new CMatrix::CMatrix object
- * copy ctor
- * @param other the other CMatrix to copy
- */
+
 CMatrix::CMatrix(const CMatrix& other) {
     if (!error_isSuccess(matrix_copy(&m_matrix, other.m_matrix)))
         throw std::runtime_error(error_getErrorMessage(matrix_copy(&m_matrix, other.m_matrix)));
 }
-/**
- * @brief copy assignment operator
- * 
- * @param other 
- * @return CMatrix& 
- */
+
 CMatrix& CMatrix::operator=(const CMatrix& other) = default;
 
-/**
- * @brief Construct a new CMatrix::CMatrix object
- * move ctor
- * @param other
- */
 CMatrix::CMatrix(CMatrix&& other) noexcept {
     m_matrix = other.m_matrix;
 }
 
-/**
- * @brief move assignment operator
- * 
- * @param other
- * @return CMatrix& 
- */
 CMatrix& CMatrix::operator=(CMatrix&& other) noexcept = default;
 
-/**
- * @brief Destroy the CMatrix::CMatrix object
- * 
- */
 CMatrix::~CMatrix() {
     matrix_destroy(m_matrix);
 }
@@ -95,8 +65,6 @@ void CMatrix::multMatrixWithScalar(double scalar) {
 }
 
 
-
-
 CMatrix CMatrix::add(const CMatrix& lhs, const CMatrix& rhs) {
     auto m = CMatrix(lhs.getHeight(), lhs.getWidth());
     if(!error_isSuccess(matrix_add(&m.m_matrix,lhs.m_matrix, rhs.m_matrix)))
@@ -117,6 +85,7 @@ CMatrix CMatrix::operator+(const CMatrix& rhs) const {
 }
 
 CMatrix CMatrix::operator-(const CMatrix& rhs) const {
+    // a - b = a + (-1.0) * b
     auto minusRhs = CMatrix(rhs);
     minusRhs.multMatrixWithScalar(-1.0);
     return add(*this, rhs);
