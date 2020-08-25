@@ -10,7 +10,9 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
     std::swap(image->bmp_dib_header.width, image->bmp_dib_header.height);
     std::swap(image->bmp_dib_header.x_pixels_per_meter, image->bmp_dib_header.y_pixels_per_meter);
     std::unique_ptr<CMatrix> new_bitMap;
+    // we related to the 8-bit and the 24-bit cases differently
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
+        // note that in 8-bit, every cell is an index so we only need to turn the matrix in 90 degrees
         new_bitMap = std::make_unique<CMatrix>(image->bmp_dib_header.height, image->bmp_dib_header.width);
         for (uint32_t i = 0; i < bitMapCopy->getHeight(); ++i) {
             for (uint32_t j = 0; j < bitMapCopy->getWidth(); ++j) {
@@ -18,6 +20,7 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
             }
         }
     } else {
+        // note that in 24-bit, every 3 cells are a pixel, so we need to keep the order of every 3 cells and turn the matrix in 90 degrees
         new_bitMap = std::make_unique<CMatrix>(bitMapCopy->getWidth() / 3, bitMapCopy->getHeight() * 3);
         for (uint32_t i = 0; i < bitMapCopy->getHeight(); ++i) {
             for (uint32_t j = 0; j < bitMapCopy->getWidth() - 2; j += 3) {
@@ -35,8 +38,9 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
 void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std::string& outputPath) {
     auto image = std::make_unique<BMP>(imagePath);
     auto matrix = image->BMP::getBitMapMatrix();
+    // again, relating to each bmp file differently
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        uint32_t numOfColorsUsed = 256;
+        uint32_t numOfColorsUsed = 256; // max (and default) size of the color palette is 256 * (sizeof(Color))
         if (image->bmp_dib_header.colors_used != 0) {
             numOfColorsUsed = image->bmp_dib_header.colors_used;
         }
@@ -44,6 +48,7 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
             image->bmp_color_palette[i].toGray();
         }
     } else {
+        // here we use the grayscale function on every 3 cells (no need to change the file to 8-bit)
         auto new_bitMap = std::make_unique<CMatrix>(matrix->getHeight(), matrix->getWidth());
         for ( uint32_t i = 0; i < matrix->getHeight(); ++i ) {
             for ( uint32_t j = 0; j < matrix->getWidth(); j += 3 ) {

@@ -26,9 +26,9 @@ void BMP::readFile(const std::string& fname) {
         // reading color palette
         if(bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
             if (bmp_dib_header.colors_used > 0) {
-                inp.read((char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
+                inp.read((char*)&bmp_color_palette, sizeof(Color) * bmp_dib_header.colors_used);
             } else if (bmp_dib_header.colors_used == 0) {
-                // if it equals to 0, the size of the color palette is maximum (256 * 8);
+                // if it equals to 0, the size of the color palette is maximum (256 * (color struct));
                 inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
             } else {
                 throw std::runtime_error("Unable to find the color palette of the image.");
