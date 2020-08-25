@@ -14,6 +14,10 @@
 #define BIT_PER_PIXEL_8 8
 
 #pragma pack(push, 1)
+/**
+ * @brief Struct for the header of the bmp file.
+ * 
+ */
 struct Header {
     uint16_t file_type = 0x4D42;          // File type always BM which is 0x4D42 (stored as hex uint16_t in little endian)
     uint32_t file_size = 0;               // Size of the file (in bytes)
@@ -22,6 +26,10 @@ struct Header {
     uint32_t offset_pixel_array = 0;      // Start position of pixel data (bytes from the beginning of the file)
 };
 
+/**
+ * @brief Struct for the DIB header of the bmp file.
+ * 
+ */
 struct DIBHeader {
     uint32_t size = 40;                     // Size of this header (BITMAPINFOHEADER's size is 40)
     int32_t width = 0;                      // width of bitmap in pixels
@@ -36,12 +44,21 @@ struct DIBHeader {
     uint32_t colors_important = 0;          // number of colors used for displaying the bitmap. If 0 all colors are required
 };
 
+/**
+ * @brief Struct for every color in the color palette of the file.
+ *        Note that we have a color palette only in 8-bit files.
+ * 
+ */
 struct Color {
     uint8_t blue;
     uint8_t green;
     uint8_t red;
     uint8_t padding;
     
+    /**
+     * @brief Converts this color to grayscale.
+     * 
+     */
     void toGray() {
         red = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
         blue = red;
@@ -50,27 +67,71 @@ struct Color {
 };
 #pragma pack(pop)
 
+/**
+ * @brief Struct for bmp file (24-bit or 8-bit).
+ * 
+ */
 struct BMP {
     Header bmp_header;
     DIBHeader bmp_dib_header;
     Color bmp_color_palette[256];
 
+    /**
+     * @brief Construct a new BMP object.
+     * 
+     * @param fname - the name (path) of the bmp file.
+     */
     BMP(const std::string& fname);
 
+    /**
+     * @brief Reading a bmp file into the struct.
+     * 
+     * @param fname - the name of the file.
+     */
     void readFile(const std::string& fname);
+    /**
+     * @brief Writing the bmp image into the given file.
+     * 
+     * @param fname - the name of the file we need to write to.
+     */
     void writeToFile(const std::string& fname);
 
+    /**
+     * @brief Get the Bit Map of the bmp in CMatrix form.
+     * 
+     * @return std::unique_ptr<CMatrix> 
+     */
     std::unique_ptr<CMatrix> getBitMapMatrix() const;
+    /**
+     * @brief Set the Bit Map of the bmp using a CMatrix form.
+     * 
+     * @param bitMapMatrix 
+     */
     void setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix);
 
 private:
     uint32_t row_stride = 0;
     std::vector<uint8_t> bmp_bitMapArray;
 
+    /**
+     * @brief Writes to the file the header, dib header and the color palette (only in 8-bit).
+     * 
+     * @param of - the stream we use to write with.
+     */
     void writeHeader(std::ofstream &of);
+    /**
+     * @brief Writes to the file the bit map of the bmp.
+     * 
+     * @param of - the stream we use to write with.
+     */
     void writeBitMap(std::ofstream &of);
 
-    // Add 1 to the row_stride until it is divisible with align_stride (for paddings)
+    /**
+     * @brief Gives the smallest number that is bigger then row_stride and divides by align_stride.
+     * 
+     * @param align_stride 
+     * @return uint32_t 
+     */
     uint32_t make_stride_aligned(uint32_t align_stride);
 };
 

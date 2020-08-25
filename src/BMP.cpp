@@ -28,6 +28,7 @@ void BMP::readFile(const std::string& fname) {
             if (bmp_dib_header.colors_used > 0) {
                 inp.read((char*)&bmp_color_palette, sizeof(uint8_t) * bmp_dib_header.colors_used);
             } else if (bmp_dib_header.colors_used == 0) {
+                // if it equals to 0, the size of the color palette is maximum (256 * 8);
                 inp.read((char*)&bmp_color_palette, sizeof(bmp_color_palette));
             } else {
                 throw std::runtime_error("Unable to find the color palette of the image.");
@@ -35,7 +36,6 @@ void BMP::readFile(const std::string& fname) {
         }
 
         // Jump to the pixel data location
-        // inp.seekg(bmp_header.offset_pixel_array, inp.beg);
         bmp_bitMapArray.resize(bmp_dib_header.width * bmp_dib_header.height * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE);
 
         // Checking the different row paddings
@@ -64,7 +64,7 @@ void BMP::readFile(const std::string& fname) {
 void BMP::writeToFile(const std::string& fname) {
     std::ofstream of {fname, std::ios_base::binary};
     if (of) {
-        // Check for paddings
+        // Check for paddings (needed in the bitMap)
         if (bmp_dib_header.width % 4 == 0) {
             writeHeader(of);
             writeBitMap(of);
@@ -103,8 +103,8 @@ void BMP::writeBitMap(std::ofstream &of) {
     of.write((const char*)bmp_bitMapArray.data(), bmp_bitMapArray.size());
 }
 
-// Add 1 to the row_stride until it is divisible with align_stride (for paddings)
 uint32_t BMP::make_stride_aligned(uint32_t align_stride) {
+    // Add 1 to the row_stride until it is divisible with align_stride (for paddings)
     uint32_t new_stride = row_stride;
     while (new_stride % align_stride != 0) {
         new_stride++;
@@ -113,6 +113,8 @@ uint32_t BMP::make_stride_aligned(uint32_t align_stride) {
 }
 
 std::unique_ptr<CMatrix> BMP::getBitMapMatrix() const {
+    // if this is a 8-bit file, each cell in the matrix will represent an index in the color palette.
+    // if this is a 24-bit file, each 3 cells in the matrix will represent the RGB values of one pixel.
     uint32_t matrixWidth = bmp_dib_header.width * 3;
     if (bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
         matrixWidth = bmp_dib_header.width;
@@ -135,5 +137,6 @@ void BMP::setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix) {
             bmp_bitMapArray[k] = static_cast<uint8_t>(bitMapMatrix->getValue(i, j));
         }
     }
+    // if the sizes of the file have changed we need to update our row_stride.
     row_stride = bmp_dib_header.width * bmp_dib_header.bit_per_pixel / SIZE_OF_BYTE;
 }
