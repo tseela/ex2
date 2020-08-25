@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <stdint.h>
 #include "CMatrix.h"
 
 #define SIZE_OF_BYTE 8
