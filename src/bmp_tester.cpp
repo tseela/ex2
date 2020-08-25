@@ -4,23 +4,12 @@
 #include "bmp_tester.hpp"
 #include "BMP.h"
 
-void printMatrix(std::unique_ptr<CMatrix>& lalala) {
-    std::cout << "matrix:" << std::endl;
-    for (uint32_t i = 0; i < lalala->getHeight(); i++) {
-        for (uint32_t j = 0; j < lalala->getWidth(); j++) {
-            std::cout << lalala->getValue(i, j) << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
 void testing::bmp::rotate_image(const std::string& imagePath, const std::string& outputPath) {
     auto image = std::make_unique<BMP>(imagePath);
     auto bitMapCopy = image->BMP::getBitMapMatrix();
     std::swap(image->bmp_dib_header.width, image->bmp_dib_header.height);
     std::swap(image->bmp_dib_header.x_pixels_per_meter, image->bmp_dib_header.y_pixels_per_meter);
     std::unique_ptr<CMatrix> new_bitMap;
-    printMatrix(bitMapCopy);
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
         new_bitMap = std::make_unique<CMatrix>(bitMapCopy->getWidth(), bitMapCopy->getHeight());
         for(uint32_t i = 0; i < bitMapCopy->getHeight(); ++i) {
@@ -28,7 +17,6 @@ void testing::bmp::rotate_image(const std::string& imagePath, const std::string&
                 new_bitMap->setValue(j, i, bitMapCopy->getValue(i, bitMapCopy->getWidth() - j - 1));
             }
         }
-        printMatrix(new_bitMap);
     } else {
         new_bitMap = std::make_unique<CMatrix>(bitMapCopy->getWidth() / 3, bitMapCopy->getHeight() * 3);
         for(uint32_t i = 0; i < bitMapCopy->getHeight(); ++i) {
@@ -49,7 +37,9 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
     auto matrix = image->BMP::getBitMapMatrix();
     std::unique_ptr<CMatrix> new_bitMap;
     if (image->bmp_dib_header.bit_per_pixel == BIT_PER_PIXEL_8) {
-        
+        for (auto i=0;i<NUMBER_OF_COLORS_IN_PALETTE;++i) {
+            image->bmp_color_palette.palette[i] = image->bmp_color_palette.palette[i].toGray();
+        }
     } else {
         new_bitMap = std::make_unique<CMatrix>(matrix->getHeight(), matrix->getWidth());
         for ( uint32_t i = 0; i < matrix->getHeight(); ++i ) {
