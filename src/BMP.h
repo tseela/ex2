@@ -10,8 +10,9 @@
 #include <stdint.h>
 #include "CMatrix.h"
 
-#define SIZE_OF_BYTE 8
-#define BIT_PER_PIXEL_8 8
+static constexpr int const& SIZE_OF_BYTE = 8;
+static constexpr int const& BIT_PER_PIXEL_8 = 8;
+static constexpr int const& DEFAULT_COLOR_PALETTE_SIZE = 256;
 
 #pragma pack(push, 1)
 /**
@@ -71,17 +72,18 @@ struct Color {
  * @brief Struct for bmp file (24-bit or 8-bit).
  * 
  */
-struct BMP {
+class BMP {
+public:
     Header bmp_header;
     DIBHeader bmp_dib_header;
-    Color bmp_color_palette[256];
+    Color bmp_color_palette[DEFAULT_COLOR_PALETTE_SIZE];
 
     /**
      * @brief Construct a new BMP object.
      * 
      * @param fname - the name (path) of the bmp file.
      */
-    BMP(const std::string& fname);
+    explicit BMP(const std::string& fname);
 
     /**
      * @brief Reading a bmp file into the struct.
@@ -110,8 +112,8 @@ struct BMP {
     void setBitMapMatrix(std::unique_ptr<CMatrix>& bitMapMatrix);
 
 private:
-    uint32_t row_stride = 0;
-    std::vector<uint8_t> bmp_bitMapArray;
+    uint32_t m_row_stride = 0;
+    std::vector<uint8_t> m_bmp_bitMapArray;
 
     /**
      * @brief Writes to the file the header, dib header and the color palette (only in 8-bit).

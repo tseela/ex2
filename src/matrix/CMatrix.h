@@ -5,7 +5,7 @@
 
 #include "ErrorCode.h"
 #include "Matrix.h"
-#include <stdint.h>
+#include <cstdint>
 
 
 
@@ -141,6 +141,31 @@ class CMatrix {
         CMatrix operator*(const CMatrix& rhs) const;
 
         /**
+         * @brief Multiply "this" matrix with another (like CMatrix::multiplyMatrix).
+         *        The left matrix is "this".
+         * 
+         * @param rhs - the matrix we multiply "this" with.
+         * @return CMatrix 
+         */
+        CMatrix operator*=(const CMatrix& rhs);
+
+        /**
+         * @brief Multiply "this" matrix with scalar.
+         * 
+         * @param rhs - the matrix we multiply "this" with.
+         * @return CMatrix 
+         */
+        CMatrix operator*(double scalar) const;
+
+        /**
+         * @brief Multiply "this" matrix with scalar.
+         * 
+         * @param rhs - the matrix we multiply "this" with.
+         * @return CMatrix 
+         */
+        CMatrix operator*=(double scalar);
+
+        /**
          * @brief Gets a cell value from the matrix.
          * 
          * @param rowIndex - the row of the cell.
@@ -158,7 +183,7 @@ class CMatrix {
          * 
          * @param matrix - the PMatrix object we use to create the CMatrix.
          */
-        CMatrix(const PMatrix& matrix);
+        explicit CMatrix(const PMatrix& matrix);
 };
 
 #endif

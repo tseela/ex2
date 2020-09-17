@@ -56,9 +56,11 @@ void testing::bmp::convert_to_grayscale(const std::string& imagePath, const std:
                 uint32_t green = matrix->getValue(i, j + 1);
                 uint32_t blue = matrix->getValue(i, j + 2);
                 double grayScale = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-                new_bitMap->setValue(i, j, grayScale);
-                new_bitMap->setValue(i, j + 1, grayScale);
-                new_bitMap->setValue(i, j + 2, grayScale);
+
+                // after finding the suitable gray color, we will change the color in the palette:
+                new_bitMap->setValue(i, j, grayScale);      // blue
+                new_bitMap->setValue(i, j + 1, grayScale);  // green
+                new_bitMap->setValue(i, j + 2, grayScale);  // red
             }
         }
         image->setBitMapMatrix(new_bitMap);
